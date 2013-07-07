@@ -51,7 +51,7 @@ defmodule GenX.Supervisor do
     end
   end
 
-  defimpl Supervision, for: Worker do    
+  defimpl Supervision, for: Worker do
     def supervise(s), do: GenX.Supervisor.supervise cast(s)
     defp cast(s) do
         Child.new(id: s.id, start_func: s.start_func,
@@ -61,7 +61,7 @@ defmodule GenX.Supervisor do
 
   defimpl Supervision, for: Sup do
     def supervise(s) do
-      GenX.Supervisor.supervise Child.new(id: s.id, start_func: {GenX.Supervisor, :start_link, [s]}, 
+      GenX.Supervisor.supervise Child.new(id: s.id, start_func: {GenX.Supervisor, :start_link, [s]},
                                           restart: s.restart, shutdown: s.shutdown, type: :supervisor, modules: [:dynamic])
     end
   end
@@ -70,7 +70,7 @@ defmodule GenX.Supervisor do
 
     def supervisor(s) do
       {max_r, max_t} = s.max_restarts
-      {{s.restart_strategy, max_r, max_t}, lc child inlist s.children, do: GenX.Supervisor.supervise child}
+      {{s.restart_strategy, max_r, max_t}, (lc child inlist s.children, do: GenX.Supervisor.supervise child)}
     end
 
     def cast(s), do: s
@@ -78,13 +78,13 @@ defmodule GenX.Supervisor do
   end
 
   # tuple
-  defimpl Supervisor, for: Tuple do    
+  defimpl Supervisor, for: Tuple do
     def supervisor(s), do: s
     def cast(s), do: s
   end
 
   # one_for_one
-  defimpl Supervisor, for: OneForOne do    
+  defimpl Supervisor, for: OneForOne do
     def supervisor(s), do: GenX.Supervisor.supervisor cast(s)
     def cast(s) do
         Sup.new(id: s.id, registered: s.registered, restart_strategy: :one_for_one,
@@ -93,12 +93,12 @@ defmodule GenX.Supervisor do
     end
   end
 
-  defimpl Supervision, for: OneForOne do    
+  defimpl Supervision, for: OneForOne do
     def supervise(s), do: GenX.Supervisor.supervise GenX.Supervisor.cast(s)
   end
 
   # one_for_all
-  defimpl Supervisor, for: OneForAll do    
+  defimpl Supervisor, for: OneForAll do
     def supervisor(s), do: GenX.Supervisor.supervisor cast(s)
     def cast(s) do
         Sup.new(id: s.id, registered: s.registered, restart_strategy: :one_for_all,
@@ -107,12 +107,12 @@ defmodule GenX.Supervisor do
     end
   end
 
-  defimpl Supervision, for: OneForAll do    
+  defimpl Supervision, for: OneForAll do
     def supervise(s), do: GenX.Supervisor.supervise GenX.Supervisor.cast(s)
   end
 
   # rest_for_one
-  defimpl Supervisor, for: RestForOne do    
+  defimpl Supervisor, for: RestForOne do
     def supervisor(s), do: GenX.Supervisor.supervisor cast(s)
     def cast(s) do
         Sup.new(id: s.id, registered: s.registered, restart_strategy: :rest_for_one,
@@ -121,12 +121,12 @@ defmodule GenX.Supervisor do
     end
   end
 
-  defimpl Supervision, for: RestForOne do    
+  defimpl Supervision, for: RestForOne do
     def supervise(s), do: GenX.Supervisor.supervise GenX.Supervisor.cast(s)
   end
 
   # simple_one_for_one
-  defimpl Supervisor, for: SimpleOneForOne do    
+  defimpl Supervisor, for: SimpleOneForOne do
     def supervisor(s), do: GenX.Supervisor.supervisor cast(s)
     def cast(s) do
         Sup.new(id: s.id, registered: s.registered, restart_strategy: :simple_one_for_one,
@@ -135,7 +135,7 @@ defmodule GenX.Supervisor do
     end
   end
 
-  defimpl Supervision, for: SimpleOneForOne do    
+  defimpl Supervision, for: SimpleOneForOne do
     def supervise(s), do: GenX.Supervisor.supervise GenX.Supervisor.cast(s)
   end
 
